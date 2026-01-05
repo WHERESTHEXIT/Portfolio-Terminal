@@ -1,88 +1,941 @@
-﻿﻿
-<!DOCTYPE html>
-
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+﻿<!DOCTYPE html>
+<html lang="fr">
 <head>
-    <meta charset="utf-8" />
-    <title>Mon Portfolio</title>
-    <link rel="shortcut icon" type="image/x-icon" href="images/exit.ico" />
-    <link rel="stylesheet" href="stylesheet.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM_ROOT // Tom DUVAL</title>
+    <link rel="icon" href="images/exit.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --term-green: #4af626;
+            --term-bg: #0d1117;
+            --term-glow: #4af62680;
+            --term-font: 'VT323', 'Courier New', Courier, monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body, html { height: 100%; width: 100%; overflow: hidden; background: #000; }
+
+        #boot-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--term-bg);
+            color: var(--term-green);
+            font-family: var(--term-font);
+            font-size: 1.5rem;
+            z-index: 10000;
+            padding: 2rem;
+            text-shadow: 0 0 5px var(--term-glow);
+            pointer-events: none;
+        }
+
+        #terminal-container {
+            width: 100%; height: 100%;
+            background-color: var(--term-bg);
+            color: var(--term-green);
+            font-family: var(--term-font);
+            font-size: 1.3rem; 
+            padding: 2rem;
+            overflow-y: auto;
+            position: relative;
+            display: none;
+        }
+
+        body::before {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.6) 100%), linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 100%, 100% 2px, 3px 100%;
+            background-attachment: fixed;
+            z-index: 10002;
+            pointer-events: none;
+        }
+        
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: rgba(18, 16, 16, 0.1);
+            opacity: 0;
+            z-index: 10002;
+            pointer-events: none;
+            animation: flicker 0.15s infinite;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.027951; }
+            5% { opacity: 0.048283; }
+            10% { opacity: 0.041328; }
+            15% { opacity: 0.035652; }
+            20% { opacity: 0.029813; }
+            25% { opacity: 0.042738; }
+            30% { opacity: 0.022941; }
+            35% { opacity: 0.046326; }
+            40% { opacity: 0.038133; }
+            45% { opacity: 0.043912; }
+            50% { opacity: 0.028972; }
+            55% { opacity: 0.022137; }
+            60% { opacity: 0.027877; }
+            65% { opacity: 0.047621; }
+            70% { opacity: 0.022204; }
+            75% { opacity: 0.047515; }
+            80% { opacity: 0.038597; }
+            85% { opacity: 0.022513; }
+            90% { opacity: 0.023253; }
+            95% { opacity: 0.030588; }
+            100% { opacity: 0.047271; }
+        }
+
+        .output-line { margin-bottom: 5px; white-space: pre-wrap; text-shadow: 0 0 5px var(--term-glow); }
+        .command-line { display: flex; margin-top: 10px; }
+        .prompt { color: var(--term-green); margin-right: 10px; font-weight: bold; }
+        #cmd-input {
+            background: transparent;
+            border: none;
+            color: var(--term-green);
+            font-family: var(--term-font);
+            font-size: 1.3rem;
+            flex-grow: 1;
+            outline: none;
+            caret-color: var(--term-green);
+            text-shadow: 0 0 5px var(--term-glow);
+        }
+
+        .error { color: var(--term-green); }
+        .success { color: var(--term-green); }
+
+        #mobile-warning {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 20000;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+            color: var(--term-green);
+            font-family: var(--term-font);
+        }
+
+        #copyright {
+            position: fixed;
+            bottom: 15px; right: 20px;
+            z-index: 10001;
+            pointer-events: none;
+        }
+
+        #copyright img {
+            height: 30px;
+            /* Transforme l'icône blanche en vert terminal (#4af626) + Glow */
+            filter: brightness(0) invert(70%) sepia(63%) saturate(462%) hue-rotate(68deg) brightness(101%) contrast(93%) drop-shadow(0 0 5px var(--term-glow));
+        }
+
+        @media (max-width: 768px) {
+            #mobile-warning { display: flex; }
+        }
+        
+    </style>
 </head>
 <body>
-<div id="header">
-<div class="container">
-    <nav>
-        <img src="images/exit.png" class="logo">
-        <ul>
-            <li><a href="#">Accueil</a></li>
-            <li><a href="#">À propos</a></li>
-            <li><a href="#">Portfolio</a></li>
-            <li><a href="#">Contact</a></li>
-        </ul>
-    </nav>
-    <div class="header-text">
-        <p>Développeur C# & Web</p>
-        <h1>Bienvenue sur mon site ! <br> Je suis <span>Tom DUVAL</span></h1>
-    </div>
-</div>
-</div>
 
-<div id="propos">
-    <div class="container">
-        <div class="row">
-            <div class="propos-col-1">
-                <img src="images/me.jpg">
-            </div>
-            <div class="propos-col-2">
-                <h1 class="sous-titre">À propos</h1>
-                <p>Je suis Tom DUVAL, un jeune développeur informatique passionné par le domaine, et qui apprend de plus en plus tous les jours. Sérieux et motivé, j'étudie cette vocation activement. Niveau d'étude actuel : BAC+1 </p>
-
-                <div class="tab-titles">
-                    <p class="tab-links active-link" onclick="opentab('compétences')">Compétences</p>
-                    <p class="tab-links" onclick="opentab('expériences')">Expériences</p>
-                    <p class="tab-links" onclick="opentab('parcours')">Parcours</p>
-                </div>
-                <div class="tab-contents active-tab" id="compétences">
-                    <ul>
-                        <li><span>C#</span><br>Développement Unity et autres</li>
-                        <li><span>Web</span><br>Développeur FullStack</li>
-                        <li><span>SQL</span><br>Configuration et mise en place de BDD</li>
-                    </ul>
-                </div>
-                <div class="tab-contents" id="expériences">
-                    <ul>
-                        <li><span>2021</span><br>Stage Hôtellerie-restauration - Juin</li>
-                        <li><span>2025</span><br>Stage Maintenance Informatique - Mai à Juin</li>
-                    </ul>
-                </div>
-                <div class="tab-contents" id="parcours">
-                    <ul>
-                        <li><span>2021-2022</span><br>Seconde générale, Lycée Jean Brito</li>
-                        <li><span>2022-2024</span><br>Bac STI2D option SIN sur 2 ans, Lycée Joliot-Curie</li>
-                        <li><span>2024-2026</span><br>BTS SIO option SLAM, Pôle Sup de La Salle</li>
-                    </ul>
-                </div>
-            </div>
+    <div id="mobile-warning" onclick="this.style.display='none'">
+        <div style="border: 2px solid var(--term-green); padding: 20px; background: #0d1117; max-width: 400px;">
+            <h2 style="color: #ff5555; margin-bottom: 1rem;">⚠ SYSTÈME INCOMPATIBLE ⚠</h2>
+            <p style="margin-bottom: 1rem;">Ce terminal a été conçu pour une utilisation sur <strong>ORDINATEUR</strong>.</p>
+            <p style="margin-bottom: 1rem;">L'expérience sur mobile peut être instable.</p>
+            <p style="font-size: 0.8rem; opacity: 0.7; border-top: 1px dashed var(--term-green); padding-top: 10px;">[ TOUCHER L'ÉCRAN POUR FORCER L'ACCÈS ]</p>
         </div>
     </div>
-</div>
 
-<script>
-var tablinks = document.getElementsByClassName("tab-links");
-var tabcontents = document.getElementsByClassName("tab-contents");
-function opentab(tabname){
-    for(tablink of tablinks){
-        tablink.classList.remove("active-link");
-    }
-    for(tabcontent of tabcontents){
-        tabcontent.classList.remove("active-tab");
-    }
-    event.currentTarget.classList.add("active-link");
-    document.getElementById(tabname).classList.add("active-tab");
-}
-</script>
+    <div id="boot-overlay"></div>
 
-<script src="script.js"></script>
+    <div id="copyright"><img src="images/exit.png" alt="EXIT PRODUCTION"></div>
 
+    <div id="terminal-container">
+        <div id="output"></div>
+        <div class="command-line">
+            <span class="prompt">invite@tom-portfolio:~$</span>
+            <input type="text" id="cmd-input" autocomplete="off" spellcheck="false">
+        </div>
+    </div>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const activeAudios = [];
+        
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume().catch(e => {
+                });
+            }
+            
+            if (type === 'key') {
+                const soundIndex = Math.floor(Math.random() * 6) + 1;
+                const audio = new Audio(`sounds/button_${soundIndex}.mp3`);
+                audio.volume = 0.35;
+                
+                activeAudios.push(audio);
+                audio.onended = () => {
+                    const idx = activeAudios.indexOf(audio);
+                    if (idx > -1) activeAudios.splice(idx, 1);
+                };
+                audio.play().catch(e => {
+                });
+
+            } else if (type === 'process') {
+                const t0 = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, t0);
+                osc.frequency.linearRampToValueAtTime(300, t0 + 0.05);
+                osc.frequency.linearRampToValueAtTime(50, t0 + 0.1);
+                
+                gain.gain.setValueAtTime(0.05, t0);
+                gain.gain.linearRampToValueAtTime(0, t0 + 0.15);
+                
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(t0);
+                osc.stop(t0 + 0.15);
+
+            } else if (type === 'error') {
+                const t0 = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, t0);
+                osc.frequency.linearRampToValueAtTime(100, t0 + 0.3);
+                gain.gain.setValueAtTime(0.1, t0);
+                gain.gain.linearRampToValueAtTime(0.001, t0 + 0.3);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(t0);
+                osc.stop(t0 + 0.3);
+            }
+        }
+
+        const bootOverlay = document.getElementById('boot-overlay');
+        const logs = [
+            "BIOS DATE 01/05/25 14:22:31 VER 1.0.2",
+            "CPU: INTEL(R) CORE(TM) I7-8700 CPU @ 3.20GHZ",
+            "Mémoire vive vérifiée : 16384 OK",
+            "Détection des périphériques...",
+            "Disque principal : FOUND (C:)",
+            "Initialisation du noyau...",
+            "Chargement des modules utilisateur...",
+            "Démarrage de l'interface SHELL..."
+        ];
+
+        let logIndex = 0;
+        
+        function runBootSequence() {
+            if (logIndex < logs.length) {
+                const p = document.createElement('div');
+                p.textContent = logs[logIndex];
+                bootOverlay.appendChild(p);
+                logIndex++;
+                
+                setTimeout(runBootSequence, 1000);
+            } else {
+                setTimeout(() => {
+                    bootOverlay.style.display = 'none';
+                    initTerminal();
+                }, 100);
+            }
+        }
+
+        window.onload = function() {
+            const startMsg = document.createElement('div');
+            startMsg.textContent = "[ CLIQUEZ OU APPUYEZ SUR UNE TOUCHE POUR INITIALISER ]";
+            startMsg.style.position = "absolute";
+            startMsg.style.top = "50%";
+            startMsg.style.left = "50%";
+            startMsg.style.transform = "translate(-50%, -50%)";
+            startMsg.style.textShadow = "none";
+            bootOverlay.appendChild(startMsg);
+
+            const startSystem = () => {
+                document.removeEventListener('click', startSystem);
+                document.removeEventListener('keydown', startSystem);
+                startMsg.remove();
+
+                const bootAudio = new Audio('sounds/bootup.mp3');
+                bootAudio.volume = 0.15; 
+                bootAudio.loop = true;
+                bootAudio.play();
+                activeAudios.push(bootAudio);
+                
+                runBootSequence();
+            };
+
+            document.addEventListener('click', startSystem);
+            document.addEventListener('keydown', startSystem);
+        };
+
+
+        const terminalContainer = document.getElementById('terminal-container');
+        const outputDiv = document.getElementById('output');
+        const inputField = document.getElementById('cmd-input');
+        
+        const banner = `
+  _______                  _____                    _ 
+ |__   __|                |  __ \\                  | |
+    | | ___  _ __ ___     | |  | |_   ___   ____ _ | |
+    | |/ _ \\| '_ \` _ \\    | |  | | | | \\ \\ / / _\` || |
+    | | (_) | | | | | |   | |__| | |_| |\\ V / (_| || |
+    |_|\\___/|_| |_| |_|   |_____/ \\__,_| \\_/ \\__,_||_| v1.0.2 
+        `;
+
+        const fileSystem = {
+            'about': "Je m'appelle Tom DUVAL.\nJe suis étudiant en BTS SIO (Solutions Logicielles/Web/Cyber/Réseaux).\nPassionné par Internet et l'informatique.",
+            'skills': "--- COMPÉTENCES ---\n> C# / Unity\n> HTML / CSS / JS\n> SQL / Base de données\n> Maintenance Matériel",
+            'projects': "--- PROJETS ---\n1. FOUND (Jeu Vidéo) - Aventure 2D sous Unity.\n2. PORTFOLIO V1 - Ce site web.\n3. SCRIPTS - Outils d'automatisation.",
+            'contact': "Email: tom.duval2006@icloud.com\nGitHub: github.com/WHERESTHEXIT",
+            'help': "Commandes disponibles :\n  about     - Qui suis-je ?\n  skills    - Mes compétences\n  projects  - Mes créations\n  contact   - Me joindre\n  worldmap  - Carte de l'Europe\n  snake     - Mini-jeu Snake\n  textgame  - Aventure textuelle (RPG)\n  clear     - Nettoyer l'écran\n  exit      - Éteindre le système"
+        };
+
+        function initTerminal() {
+            terminalContainer.style.display = 'block';
+            inputField.focus();
+            printOutput(banner, 'success');
+            printOutput("Bienvenue, invité. Tapez 'help' pour voir la liste des commandes.\n", '');
+        }
+
+        const commandHistory = [];
+        let historyIndex = -1;
+        
+        let isGameRunning = false;
+        let snakeState = null;
+        let isTextGameRunning = false;
+
+        inputField.addEventListener('keydown', function(e) {
+            if (isGameRunning) {
+                e.preventDefault();
+                return;
+            }
+
+            if(e.key.length === 1 || e.key === 'Backspace' || e.key === 'Enter') {
+                playSound('key');
+            }
+
+            if (e.key === 'Enter') {
+                const input = this.value.trim();
+                
+                if (isTextGameRunning) {
+                    printOutput(`> ${input}`, 'prompt-style');
+                    handleTextGameInput(input);
+                    this.value = '';
+                    this.scrollIntoView();
+                    return;
+                }
+
+                if (input) {
+                    commandHistory.push(input);
+                    historyIndex = commandHistory.length;
+                    printOutput(`invite@tom-portfolio:~$ ${input}`, 'prompt-style');
+                    processCommand(input.toLowerCase());
+                } else {
+                    printOutput(`invite@tom-portfolio:~$`, 'prompt-style');
+                }
+                this.value = '';
+                this.scrollIntoView();
+            } else if (e.key === 'ArrowUp') {
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    this.value = commandHistory[historyIndex];
+                }
+                e.preventDefault();
+            } else if (e.key === 'ArrowDown') {
+                if (historyIndex < commandHistory.length - 1) {
+                    historyIndex++;
+                    this.value = commandHistory[historyIndex];
+                } else {
+                    historyIndex = commandHistory.length;
+                    this.value = '';
+                }
+                e.preventDefault();
+            } else if (e.key === 'Tab') {
+                e.preventDefault();
+                const current = this.value;
+                
+                if (isTextGameRunning) {
+                    const parts = current.split(' ');
+                    if (parts.length === 1) {
+                        const cmds = ['ls', 'cat', 'scan', 'analyze', 'inject', 'connect', 'crack', 'rm', 'download', 'decrypt', 'whoami', 'exit', 'help', 'man'];
+                        const matches = cmds.filter(c => c.startsWith(parts[0].toLowerCase()));
+                        if (matches.length === 1) this.value = matches[0] + ' ';
+                    } 
+                    else if (parts.length === 2) {
+                        const cmd = parts[0].toLowerCase();
+                        const arg = parts[1];
+                        let candidates = [];
+                        
+                        if (['cat', 'rm', 'download', 'decrypt'].includes(cmd)) {
+                            const system = network[gameState.currentSystem];
+                            if (system && system.files) candidates = Object.keys(system.files);
+                        } else if (['connect', 'analyze', 'inject'].includes(cmd)) {
+                            candidates = Object.keys(network).filter(ip => ip !== 'localhost');
+                        } else if (cmd === 'crack') {
+                            if (gameState.currentSystem === 'localhost') candidates = Object.keys(network['localhost'].files);
+                            candidates.push('5f4dcc3b5aa765d61d8327deb882cf99');
+                        }
+                        
+                        const matches = candidates.filter(c => c.startsWith(arg));
+                        if (matches.length === 1) this.value = cmd + ' ' + matches[0];
+                    }
+                } else {
+                    const matches = Object.keys(fileSystem).filter(cmd => cmd.startsWith(current));
+                    if (matches.length === 1) {
+                        this.value = matches[0];
+                    }
+                }
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (isGameRunning && snakeState) {
+                if(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' ', 'q', 'Q'].includes(e.key)) e.preventDefault();
+                snakeState.handleInput(e.key);
+            }
+        });
+
+        document.addEventListener('click', () => {
+            if(terminalContainer.style.display !== 'none' && !isGameRunning) {
+                inputField.focus();
+            }
+        });
+
+        function processCommand(cmd) {
+            setTimeout(() => {
+                switch(cmd) {
+                    case 'help':
+                        printOutput(fileSystem.help);
+                        break;
+                    case 'about':
+                        printOutput(fileSystem.about);
+                        break;
+                    case 'skills':
+                        printOutput(fileSystem.skills);
+                        break;
+                    case 'projects':
+                        printOutput(fileSystem.projects);
+                        printOutput("Tapez 'open found' pour voir une image du jeu.", "grey");
+                        break;
+                    case 'open found':
+                        printOutput("Chargement de l'image...", "success");
+                        
+                        const wrapper = document.createElement('div');
+                        wrapper.style.maxWidth = "300px";
+                        wrapper.style.border = "2px solid #4af626";
+                        wrapper.style.marginTop = "10px";
+                        wrapper.style.overflow = "hidden";
+                        wrapper.style.height = "0px";
+                        
+                        const img = document.createElement('img');
+                        img.src = "images/found.png";
+                        img.style.width = "100%";
+                        img.style.display = "block";
+                        
+                        img.onerror = function() { 
+                            this.src = 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=500&auto=format&fit=crop';
+                            this.onerror = null;
+                        };
+
+                        img.onload = function() {
+                            const ratio = (this.naturalWidth > 0) ? (this.naturalHeight / this.naturalWidth) : 1;
+                            const targetHeight = Math.floor(ratio * 300);
+                            let currentHeight = 0;
+                            
+                            const interval = setInterval(() => {
+                                const chunk = Math.floor(Math.random() * 10) + 2;
+                                currentHeight += chunk;
+                                if (currentHeight >= targetHeight) {
+                                    currentHeight = targetHeight;
+                                    clearInterval(interval);
+                                }
+                                wrapper.style.height = currentHeight + "px";
+                                const container = document.getElementById('terminal-container');
+                                container.scrollTop = container.scrollHeight;
+                            }, 80);
+                        };
+
+                        wrapper.appendChild(img);
+                        outputDiv.appendChild(wrapper);
+                        break;
+                    case 'worldmap':
+                        {
+                            printOutput("Chargement de la carte...", "success");
+                            
+                            const wrapper = document.createElement('div');
+                            wrapper.style.maxWidth = "450px";
+                            wrapper.style.border = "2px solid #4af626";
+                            wrapper.style.marginTop = "10px";
+                            wrapper.style.overflow = "hidden";
+                            wrapper.style.height = "0px";
+                            
+                            const img = document.createElement('img');
+                            img.src = "images/map.png";
+                            img.style.width = "100%";
+                            img.style.display = "block";
+                            
+                            img.onload = function() {
+                                const ratio = (this.naturalWidth > 0) ? (this.naturalHeight / this.naturalWidth) : 1;
+                                const targetHeight = Math.floor(ratio * 450);
+                                let currentHeight = 0;
+                                
+                                const interval = setInterval(() => {
+                                    const chunk = Math.floor(Math.random() * 10) + 2;
+                                    currentHeight += chunk;
+                                    if (currentHeight >= targetHeight) {
+                                        currentHeight = targetHeight;
+                                        clearInterval(interval);
+                                    }
+                                    wrapper.style.height = currentHeight + "px";
+                                    const container = document.getElementById('terminal-container');
+                                    container.scrollTop = container.scrollHeight;
+                                }, 80);
+                            };
+                            
+                            wrapper.appendChild(img);
+                            outputDiv.appendChild(wrapper);
+                        }
+                        break;
+                    case 'snake':
+                        startSnake();
+                        break;
+                    case 'textgame':
+                        startTextGame();
+                        break;
+                    case 'contact':
+                        printOutput(fileSystem.contact);
+                        break;
+                    case 'clear':
+                        outputDiv.innerHTML = '';
+                        printOutput(banner, 'success');
+                        break;
+                    case 'exit':
+                        if(audioCtx.state !== 'closed') audioCtx.close();
+                        activeAudios.forEach(a => { a.pause(); a.currentTime = 0; });
+                        
+                        document.body.innerHTML = "<div style='display:flex;justify-content:center;align-items:center;height:100%;background:#000;color:#4af626;font-family:monospace;font-size:2rem;'>SYSTÈME ARRÊTÉ.</div>";
+                        break;
+                    default:
+                        printOutput(`Commande inconnue : "${cmd}". Tapez 'help' pour de l'aide.`, 'error');
+                }
+                const container = document.getElementById('terminal-container');
+                container.scrollTop = container.scrollHeight;
+            }, 100);
+        }
+
+        function startSnake() {
+            isGameRunning = true;
+            inputField.blur();
+            printOutput("Lancement de SNAKE.EXE...", "success");
+            
+            setTimeout(() => {
+                const win = document.createElement('div');
+                Object.assign(win.style, {
+                    position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+                    width: '604px', border: '2px solid #4af626', background: '#0d1117',
+                    zIndex: '1000', boxShadow: '0 0 20px rgba(74, 246, 38, 0.2)',
+                    display: 'flex', flexDirection: 'column',
+                    fontFamily: 'var(--term-font)'
+                });
+
+                const header = document.createElement('div');
+                header.innerHTML = "<span>SNAKE.EXE</span> <span>[R]edémarrer [Q]uitter</span>";
+                Object.assign(header.style, {
+                    background: '#4af626', color: '#000', fontWeight: 'bold', padding: '5px 10px',
+                    cursor: 'grab', display: 'flex', justifyContent: 'space-between', userSelect: 'none'
+                });
+                win.appendChild(header);
+
+                const canvas = document.createElement('canvas');
+                canvas.width = 600; canvas.height = 400;
+                canvas.style.display = 'block'; canvas.style.background = '#000';
+                win.appendChild(canvas);
+
+                document.body.appendChild(win);
+
+                let isDragging = false, offsetX, offsetY;
+                header.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    const rect = win.getBoundingClientRect();
+                    win.style.transform = 'none';
+                    win.style.left = rect.left + 'px';
+                    win.style.top = rect.top + 'px';
+                    offsetX = e.clientX - rect.left;
+                    offsetY = e.clientY - rect.top;
+                    header.style.cursor = 'grabbing';
+                });
+                
+                const onMouseMove = (e) => {
+                    if (isDragging) {
+                        win.style.left = (e.clientX - offsetX) + 'px';
+                        win.style.top = (e.clientY - offsetY) + 'px';
+                    }
+                };
+                const onMouseUp = () => { isDragging = false; header.style.cursor = 'grab'; };
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+
+                const ctx = canvas.getContext('2d');
+                const gridSize = 20;
+                const termFont = getComputedStyle(document.documentElement).getPropertyValue('--term-font');
+                let snake, direction, nextDirection, food, score, gameInterval, gameState;
+
+                function initGame() {
+                    snake = [{x: 10, y: 10}, {x: 9, y: 10}, {x: 8, y: 10}];
+                    direction = 'right'; nextDirection = 'right'; score = 0;
+                    gameState = 'START';
+                    spawnFood();
+                    draw();
+                }
+
+                function spawnFood() {
+                    food = { x: Math.floor(Math.random() * (canvas.width/gridSize)), y: Math.floor(Math.random() * (canvas.height/gridSize)) };
+                    if (snake.some(s => s.x === food.x && s.y === food.y)) spawnFood();
+                }
+
+                function draw() {
+                    ctx.shadowBlur = 0;
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    ctx.shadowBlur = 5;
+                    ctx.shadowColor = "rgba(74, 246, 38, 0.5)";
+                    
+                    if (gameState === 'START') {
+                        ctx.fillStyle = '#4af626'; ctx.font = '25px ' + termFont; ctx.textAlign = 'center';
+                        ctx.fillText("APPUYEZ SUR UNE TOUCHE POUR JOUER", canvas.width/2, canvas.height/2);
+                        return;
+                    }
+
+                    ctx.fillStyle = '#4af626';
+                    snake.forEach(s => ctx.fillRect(s.x * gridSize, s.y * gridSize, gridSize - 2, gridSize - 2));
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(food.x * gridSize, food.y * gridSize, gridSize - 2, gridSize - 2);
+                    ctx.fillStyle = '#4af626'; ctx.font = '20px ' + termFont; ctx.textAlign = 'left';
+                    ctx.fillText(`Score: ${score}`, 10, 25);
+
+                    if (gameState === 'GAMEOVER') {
+                        ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx.fillStyle = '#ff5555'; ctx.font = '40px ' + termFont; ctx.textAlign = 'center';
+                        ctx.fillText("GAME OVER", canvas.width/2, canvas.height/2);
+                    }
+                }
+
+                function update() {
+                    if (gameState !== 'PLAYING') return;
+                    direction = nextDirection;
+                    const head = { ...snake[0] };
+                    if (direction === 'right') head.x++; if (direction === 'left') head.x--;
+                    if (direction === 'up') head.y--; if (direction === 'down') head.y++;
+
+                    if (head.x < 0 || head.x >= canvas.width/gridSize || head.y < 0 || head.y >= canvas.height/gridSize || snake.some(s => s.x === head.x && s.y === head.y)) {
+                        gameState = 'GAMEOVER'; clearInterval(gameInterval); draw(); return;
+                    }
+                    snake.unshift(head);
+                    if (head.x === food.x && head.y === food.y) { score += 10; spawnFood(); }
+                    else { snake.pop(); }
+                    draw();
+                }
+
+                initGame();
+
+                snakeState = {
+                    handleInput: (key) => {
+                        const k = key.toLowerCase();
+                        if (gameState === 'START') { gameState = 'PLAYING'; gameInterval = setInterval(update, 100); return; }
+                        if (k === 'q') {
+                            clearInterval(gameInterval); win.remove(); isGameRunning = false; snakeState = null;
+                            document.removeEventListener('mousemove', onMouseMove); document.removeEventListener('mouseup', onMouseUp);
+                            inputField.focus(); printOutput(`Session Snake terminée. Score final : ${score}`, 'success');
+                            return;
+                        }
+                        if (k === 'r') { clearInterval(gameInterval); initGame(); return; }
+                        if (gameState === 'PLAYING') {
+                            if (key === 'ArrowUp' && direction !== 'down') nextDirection = 'up';
+                            if (key === 'ArrowDown' && direction !== 'up') nextDirection = 'down';
+                            if (key === 'ArrowLeft' && direction !== 'right') nextDirection = 'left';
+                            if (key === 'ArrowRight' && direction !== 'left') nextDirection = 'right';
+                        }
+                    }
+                };
+            }, 2000);
+        }
+
+        let gameState = {
+            currentSystem: 'localhost',
+            knownIPs: [],
+            missionComplete: false
+        };
+
+        const network = {
+            'localhost': {
+                ip: '127.0.0.1',
+                name: "TERMINAL LOCAL (Attaquant)",
+                files: {
+                    'mission.txt': "CIBLE : Workstation CEO (192.168.1.99)\nOBJECTIF : Supprimer 'review_final.pdf'.\nINFO : Le serveur WEB est le seul point d'entrée public.",
+                    'manual.txt': "--- HACKER'S HANDBOOK v2.5 ---\n\nCOMMANDES RÉSEAU :\n scan                : Scanner le réseau local.\n analyze [ip]        : Détecter les vulnérabilités.\n connect [user]@[ip] [pass] : Connexion SSH.\n download [fichier]  : Télécharger un fichier vers localhost.\n\nCOMMANDES SYSTÈME :\n ls                  : Lister les fichiers.\n cat [fichier]       : Lire le contenu.\n rm [fichier]        : Supprimer un fichier.\n whoami              : Utilisateur actuel.\n exit                : Déconnexion.\n\nOUTILS OFFENSIFS :\n inject [ip]         : Injection SQL (Port 80).\n crack [hash/file]   : Brute-force hash ou fichier.\n decrypt [file] [key]: Déchiffrer un fichier .enc."
+                }
+            },
+            '192.168.1.10': {
+                name: "SRV-WEB-01",
+                vuln: 'sql_injection',
+                users: { 'admin': 'admin123' },
+                files: {
+                    'index.html': "<html>CorpNet Intranet</html>",
+                    'config.php': "<?php\n$db_host = '192.168.1.20';\n$db_user = 'root';\n$db_pass = 'S3rv3r_R00t!';\n?>"
+                }
+            },
+            '192.168.1.20': {
+                name: "SRV-DB-02",
+                vuln: null,
+                users: { 'root': 'S3rv3r_R00t!' },
+                files: {
+                    'users.db': "admin:admin123\nceo:5f4dcc3b5aa765d61d8327deb882cf99 (MD5)",
+                    'recovery.key': "KEY: 1984_Orwell_Was_Right"
+                }
+            },
+            '192.168.1.99': {
+                name: "PC-CEO-X",
+                vuln: null,
+                users: { 'ceo': 'linux4ever' },
+                files: {
+                    'review_final.pdf.enc': "[CONTENU CHIFFRÉ - INLISIBLE]\nUtilisez 'decrypt' avec la clé appropriée.",
+                    'notes.txt': "J'ai chiffré le dossier final par sécurité.\nLa clé de récupération est stockée sur le serveur de base de données (SRV-DB-02)."
+                }
+            }
+        };
+
+        function startTextGame() {
+            isTextGameRunning = true;
+            gameState = {
+                currentSystem: 'localhost',
+                knownIPs: [],
+                missionComplete: false
+            };
+            document.querySelector('.prompt').style.display = 'none';
+            printOutput("--- NET-INTRUDER v3.0 ---", "success");
+            printOutput("CONNEXION ÉTABLIE.", "success");
+            printOutput("Tapez 'ls' pour voir les fichiers locaux. Tapez 'cat manual.txt' pour l'aide.", "grey");
+            printOutput("---------------------------------------------------");
+        }
+
+        function handleTextGameInput(input) {
+            const parts = input.trim().split(/\s+/);
+            const cmd = parts[0].toLowerCase();
+            const arg1 = parts[1];
+            const arg2 = parts[2];
+            
+            const system = network[gameState.currentSystem];
+
+            if (cmd === 'ls') {
+                printOutput(`Fichiers sur ${system.name} :`);
+                Object.keys(system.files).forEach(f => printOutput(` - ${f}`, 'term-green'));
+            }
+            else if (cmd === 'cat') {
+                if (!arg1) { printOutput("Erreur: Spécifiez un fichier."); return; }
+                if (system.files[arg1]) {
+                    printOutput(`--- DEBUT DU FICHIER : ${arg1} ---`, 'grey');
+                    printOutput(system.files[arg1]);
+                    printOutput(`--- FIN DU FICHIER ---`, 'grey');
+                } else {
+                    printOutput("Erreur: Fichier introuvable.", "error");
+                }
+            }
+            else if (cmd === 'scan') {
+                printOutput("Scan du réseau en cours...", "process");
+                setTimeout(() => {
+                    printOutput("Hôtes découverts :", "success");
+                    printOutput(" - 192.168.1.10 (WEB)");
+                    printOutput(" - 192.168.1.20 (DB)");
+                    printOutput(" - 192.168.1.99 (CEO)");
+                    gameState.knownIPs = ['192.168.1.10', '192.168.1.20', '192.168.1.99'];
+                }, 1500);
+            }
+            else if (cmd === 'analyze') {
+                if (!arg1) { printOutput("Usage: analyze [ip]"); return; }
+                if (!gameState.knownIPs.includes(arg1)) { printOutput("Erreur: IP inconnue ou hors de portée."); return; }
+                
+                printOutput(`Analyse de ${arg1}...`, "process");
+                setTimeout(() => {
+                    const target = network[arg1];
+                    if (target.vuln) {
+                        printOutput(`VULNÉRABILITÉ DÉTECTÉE : ${target.vuln}`, "term-green");
+                        printOutput("Utilisez la commande appropriée pour l'exploiter.");
+                    } else {
+                        printOutput("Aucune vulnérabilité évidente détectée. Authentification requise.");
+                    }
+                }, 1500);
+            }
+            else if (cmd === 'inject') {
+                if (!arg1) { printOutput("Usage: inject [ip]"); return; }
+                const target = network[arg1];
+                if (target && target.vuln === 'sql_injection') {
+                    printOutput("Injection SQL en cours...", "process");
+                    setTimeout(() => {
+                        printOutput("SUCCÈS ! Table 'users' dumpée.", "success");
+                        printOutput("Admin credentials found: admin / admin123", "term-green");
+                    }, 2000);
+                } else {
+                    printOutput("Échec de l'injection. Cible non vulnérable.", "error");
+                }
+            }
+            else if (cmd === 'connect') {
+                if (!arg1 || !arg1.includes('@')) { printOutput("Usage: connect user@ip [password]"); return; }
+                const [user, ip] = arg1.split('@');
+                
+                if (!network[ip]) { printOutput("Erreur: Hôte inaccessible.", "error"); return; }
+                
+                const target = network[ip];
+                if (target.users[user]) {
+                    if (!arg2) {
+                         printOutput(`Erreur: Mot de passe requis pour ${user}@${ip}.`, "error");
+                         return;
+                    }
+
+                    if (arg2 === target.users[user]) {
+                        printOutput("ACCÈS AUTORISÉ.", "success");
+                        gameState.currentSystem = ip;
+                        printOutput(`Vous êtes maintenant connecté sur ${target.name}.`);
+                        playSound('success');
+                    } else {
+                        printOutput("ACCÈS REFUSÉ.", "error");
+                        playSound('error');
+                    }
+                } else {
+                    printOutput("Utilisateur inconnu.", "error");
+                }
+            }
+            else if (cmd === 'crack') {
+                if (!arg1) { printOutput("Usage: crack [hash] OU crack [fichier]"); return; }
+                
+                let hashToCrack = arg1;
+                
+                const system = network[gameState.currentSystem];
+                if (system.files[arg1]) {
+                    const content = system.files[arg1];
+                    const match = content.match(/([a-fA-F0-9]{32})/);
+                    if (match) {
+                        hashToCrack = match[1];
+                        printOutput(`Hash trouvé dans ${arg1} : ${hashToCrack}`, "term-green");
+                    } else {
+                        printOutput("Aucun hash MD5 valide trouvé dans ce fichier.", "error");
+                        return;
+                    }
+                }
+
+                if (hashToCrack === '5f4dcc3b5aa765d61d8327deb882cf99') {
+                    printOutput("Lancement de Rainbow Tables...", "process");
+                    setTimeout(() => {
+                        printOutput("HASH CRACKÉ : 'linux4ever'", "success");
+                        playSound('success');
+                    }, 3000);
+                } else {
+                    printOutput("Hash inconnu ou trop complexe.", "error");
+                }
+            }
+            else if (cmd === 'download') {
+                if (gameState.currentSystem === 'localhost') { printOutput("Vous êtes déjà en local.", "error"); return; }
+                if (!arg1) { printOutput("Usage: download [fichier]"); return; }
+                
+                const system = network[gameState.currentSystem];
+                if (system.files[arg1]) {
+                    printOutput(`Téléchargement de ${arg1} vers localhost...`, "process");
+                    setTimeout(() => {
+                        network['localhost'].files[arg1] = system.files[arg1];
+                        printOutput("Transfert terminé. Fichier disponible en local.", "success");
+                    }, 1000);
+                } else {
+                    printOutput("Fichier introuvable.", "error");
+                }
+            }
+            else if (cmd === 'decrypt') {
+                if (!arg1 || !arg2) { printOutput("Usage: decrypt [fichier] [clé]"); return; }
+                const system = network[gameState.currentSystem];
+                
+                if (system.files[arg1]) {
+                    if (arg1.endsWith('.enc')) {
+                        if (arg2 === '1984_Orwell_Was_Right') {
+                            printOutput(`Déchiffrement de ${arg1}...`, "process");
+                            setTimeout(() => {
+                                const newName = arg1.replace('.enc', '');
+                                system.files[newName] = "EVALUATION ANNUELLE : USER\nNOTE : 0/5\nDECISION : LICENCIEMENT IMMÉDIAT.";
+                                printOutput(`Fichier déchiffré : ${newName}`, "success");
+                                playSound('success');
+                            }, 1500);
+                        } else { printOutput("Clé de déchiffrement incorrecte.", "error"); playSound('error'); }
+                    } else { printOutput("Ce fichier n'est pas chiffré.", "error"); }
+                } else {
+                    printOutput("Fichier introuvable.", "error");
+                }
+            }
+            else if (cmd === 'rm') {
+                if (gameState.currentSystem !== '192.168.1.99') { printOutput("Permission refusée ou fichier inutile ici."); return; }
+                if (arg1 === 'review_final.pdf') {
+                    printOutput("Suppression de 'review_final.pdf'...", "process");
+                    setTimeout(() => {
+                        printOutput("FICHIER SUPPRIMÉ.", "success");
+                        printOutput("MISSION ACCOMPLIE. Vous avez sauvé votre poste.", "term-green");
+                        printOutput("Tapez 'exit' pour quitter le jeu.", "grey");
+                        gameState.missionComplete = true;
+                        playSound('success');
+                    }, 2000);
+                } else {
+                    printOutput("Fichier introuvable.");
+                }
+            }
+            else if (cmd === 'whoami') {
+                printOutput(gameState.currentSystem === 'localhost' ? 'hacker' : 'root');
+            }
+            else if (cmd === 'exit' || cmd === 'disconnect') {
+                if (gameState.currentSystem === 'localhost') {
+                    quitTextGame();
+                } else {
+                    gameState.currentSystem = 'localhost';
+                    printOutput("Déconnexion... Retour au terminal local.");
+                }
+            }
+            else if (cmd === 'help' || cmd === 'man') {
+                printOutput("Consultez 'manual.txt' avec la commande 'cat manual.txt'.");
+            }
+            else {
+                printOutput(`Commande '${cmd}' inconnue.`, "error");
+            }
+        }
+
+        function quitTextGame() {
+            isTextGameRunning = false;
+            document.querySelector('.prompt').style.display = 'inline';
+            printOutput("Fermeture de l'aventure textuelle.", "error");
+        }
+
+        function printOutput(text, style = '') {
+            const div = document.createElement('div');
+            div.className = 'output-line ' + style;
+            
+            const strong = document.createElement('strong');
+            strong.textContent = text;
+            div.appendChild(strong);
+            
+            outputDiv.appendChild(div);
+            const container = document.getElementById('terminal-container');
+            container.scrollTop = container.scrollHeight;
+        }
+
+    </script>
 </body>
 </html>
