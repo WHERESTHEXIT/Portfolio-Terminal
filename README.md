@@ -1,18 +1,31 @@
-Hey. 
+# 🖥️ Portfolio "Terminal"
 
-If you are a company looking for a new dev, my website sells myself already ;), for the others.. welcome to my second code project ! (I will talk about my personnal life for the next few lines, skip to line 11 if you want to know what am i doing.)
+> *Plongez dans la nostalgie des années 80 avec ce portfolio aux allures de terminal de commandes rétro.*
 
-So i've been trying to make a game in the past few months, named "Found". It's a 2D adventure game made in Unity and in developped in C#. 
-I am not going to lie, it's pretty rough and not user friendly, but..
-I'm still working on it ! this project is tho, on the side of my life for the moment because of my studies that takes me loads of time. 
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+![Status](https://img.shields.io/badge/Statut-Archivé_/_Abandonné-red?style=for-the-badge)
 
-For anyone who wanted to know, everything i code is not for school project but for fun/professional reasons. that leads us to..
+## 📜 À propos du projet
 
-My portfolio !
+Bienvenue sur mon tout premier projet de développement web ! 
 
-Yes indeed, this project is my very first (and very own !) web developpement project. For the moment i write those lines (04/03/25) there's only HTML and CSS. But soon, i will add react to make 
-the website dynamic. I'm still a rookie in the world of computer science, so if you got any advice, i'm taking it !
+**Terminal** a été pensé pour reproduire l'esthétique brute et l'ambiance des écrans cathodiques et des lignes de commandes des années 80. Tout ce que je code ici n'est pas juste un projet scolaire, mais une initiative réalisée purement par passion et dans une optique professionnelle. 
 
-Spread love, we are all humans. 
+⚠️ **Note :** Ce projet est aujourd'hui **abandonné** et archivé. Il a été mon grand terrain d'apprentissage, mais j'ai depuis développé un **second portfolio** plus abouti pour me représenter.
 
-<3
+## 🛠️ Sous le capot (Technologies)
+
+Pour ce premier essai, je suis resté sur les fondamentaux :
+* **HTML5** pour structurer les données.
+* **CSS3** pour créer toute l'interface visuelle rétro.
+
+*L'objectif initial (en mars 2025) était d'y implémenter **React** pour rendre le site totalement dynamique, mais mon aventure a finalement continué sur la V2 de mon portfolio !*
+
+## 💬 Un petit mot personnel
+
+Si vous êtes une entreprise à la recherche d'un nouveau développeur, mon Github actuel fait déjà la promotion de mon profil 😉. Pour les autres, bienvenue dans les archives de mon apprentissage !
+
+Je suis encore au début de mon voyage dans le monde de l'informatique et du développement. Si vous êtes de passage sur ce code et que vous avez des conseils ou des retours constructifs, je suis totalement preneur !
+
+*Spread love, we are all humans.* ❤️
