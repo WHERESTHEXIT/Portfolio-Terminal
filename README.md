@@ -19,6 +19,7 @@ Bienvenue sur mon tout premier projet de développement web !
 Pour ce premier essai, je suis resté sur les fondamentaux :
 * **HTML5** pour structurer les données.
 * **CSS3** pour créer toute l'interface visuelle rétro.
+* **JavaScript** pour les différents éléments comme le Snake.
 
 *L'objectif initial (en mars 2025) était d'y implémenter **React** pour rendre le site totalement dynamique, mais mon aventure a finalement continué sur la V2 de mon portfolio !*
 
